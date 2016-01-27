@@ -40,9 +40,9 @@ Output for the Sample Input
 **/
 
 /*
-*	Balls in queue simulator for the Clock Ball challenge:
-*	
-*	Usage: new ballClock.Simulator([SIZE1, SIZE2]);
+*   Balls in queue simulator for the Clock Ball challenge:
+*   
+*   Usage: new ballClock.Simulator([SIZE1, SIZE2]);
 *
 * @author Andrew Lienhard
 * @date Jan 26, 2016
@@ -56,49 +56,52 @@ var ballClock = ballClock || {};
 /** Set to true to enable console.log messages **/
 ballClock.DEBUG = true;
 
+/**
+* Simple console debug mode logger.
+*/
 ballClock.log = function(msg) {
-	if (ballClock.DEBUG) {
-		console.log(msg);
-	}
+    if (ballClock.DEBUG) {
+        console.log(msg);
+    }
 }
 
 /**************************************************************************************/
-// TrayQueue
+// TrayQueue: has an array, a name, and a max size.
 /**************************************************************************************/
 
 /**
 * @class Tray Queue Class.
 **/
 ballClock.TrayQueue = function (size, name) {
-	this.items = [];
-	this.size = size;
-	this.name = name;
+    this.items = [];
+    this.size = size;
+    this.name = name;
 }
 
 /**
 * Push function to items to the end of queue.
 **/
 ballClock.TrayQueue.prototype.push = function(ball) {
-	if (this.items.length >= this.size) {
-		return -1;
-	}
-	return this.items.push(ball);
+    if (this.items.length >= this.size) {
+        return -1;
+    }
+    return this.items.push(ball);
 }
 
 ballClock.TrayQueue.prototype.next = function() {
-	return this.items.shift(); // remove first element
+    return this.items.shift(); // remove first element
 }
 
 ballClock.TrayQueue.prototype.last = function() {
-	return this.items.pop(); // remove first element
+    return this.items.pop(); // remove last element
 }
 
 ballClock.TrayQueue.prototype.print = function() {
-	ballClock.log(this.name +  ":"  + this.items);
+    ballClock.log(this.name +  ":"  + this.items);
 };
 
 /**************************************************************************************/
-// BottomTrayQueue <-- TrayQueue
+// BottomTrayQueue extends TrayQueue, 
 /**************************************************************************************/
 
 
@@ -106,10 +109,12 @@ ballClock.TrayQueue.prototype.print = function() {
 * @class Bottom tray queue inherits from TrayQueue.
 **/
 ballClock.BottomTrayQueue = function(size) {
-	ballClock.TrayQueue.call(this, size, "Bottom Tray");
-	for (var i=1; i<=size; i++) {
-		this.push(i);
-	}
+    ballClock.TrayQueue.call(this, size, "Bottom Tray");
+    // Initialize bottom queue
+    // [0]=1, [1]=2 ,..., [n-1]=n
+    for (var i=1; i<=size; i++) {
+        this.push(i);
+    }
 }
 ballClock.BottomTrayQueue.prototype = Object.create(ballClock.TrayQueue.prototype); 
 ballClock.BottomTrayQueue.prototype.constructor = ballClock.BottomTrayQueue;
@@ -118,12 +123,12 @@ ballClock.BottomTrayQueue.prototype.constructor = ballClock.BottomTrayQueue;
 * Verification step for bottom tray. Checks order.
 */
 ballClock.BottomTrayQueue.prototype.checkOrder = function() {
-	for (var i=0; i<this.size; i++) {
-		if (this.items[i] != i+1) {
-			return false; // bail, we're out of order.
-		}
-	}
-	return true;
+    for (var i=0; i<this.size; i++) {
+        if (this.items[i] != i + 1) { // [0]=1, [1]=2, etc.
+            return false; // bail: it's out of order.
+        }
+    }
+    return true;
 };
 
 /**************************************************************************************/
@@ -133,45 +138,48 @@ ballClock.BottomTrayQueue.prototype.checkOrder = function() {
 /**
 * @class Clock
 */
+
+// Bound values for Clock sizing
 ballClock.Clock.MIN_SIZE = 27;
 ballClock.Clock.MAX_SIZE = 217;
 
 ballClock.Clock = function(size) {
-	//console.log("Initializing a ball clock of size " + size);
-	if (size <= ballClock.Clock.MIN_SIZE || size >= ballClock.Clock.MAX_SIZE)  {
-		console.log("Clock out of range " + size);
-		return;
-	}
-	this.size = size;
-	// init trays
-	this.bottomTray = new ballClock.BottomTrayQueue(size);
-	this.oneMinuteQueue = new ballClock.TrayQueue(4, "One Minute Tray");
-	this.fiveMinuteQueue = new ballClock.TrayQueue(11, "Five Minute Tray");
-	this.oneHourQueue = new ballClock.TrayQueue(11, "Hour Tray");
+    //console.log("Initializing a ball clock of size " + size);
+    if (size <= ballClock.Clock.MIN_SIZE || size >= ballClock.Clock.MAX_SIZE)  {
+        console.log("Clock out of range " + size);
+        return;
+    }
+    this.size = size;
+    // init trays
+    this.bottomTray = new ballClock.BottomTrayQueue(size);
+    this.oneMinuteQueue = new ballClock.TrayQueue(4, "One Minute Tray");
+    this.fiveMinuteQueue = new ballClock.TrayQueue(11, "Five Minute Tray");
+    this.oneHourQueue = new ballClock.TrayQueue(11, "Hour Tray");
 };
 
 
 /**
 * Take given queue and dump it into the ball queue in reverse order.
+* @param tray, the current TrayQueue
 */
 ballClock.Clock.prototype.drop = function(tray) {
-	for (var i=tray.items.length-1; i>=0 ; i--) {
-		this.bottomTray.push(tray.items[i]);
-	}
-	tray.items = [];
-	//this.print();
+    // work from n-1 to 0 to dump in reverse order
+     for (var i=0; i<tray.size; i++) {
+        this.bottomTray.push(tray.last());
+    }
+    
 };
 
 /**
 * Prints the state of the trays of the clock.
 */
 ballClock.Clock.prototype.print = function() {
-	ballClock.log("-----");
-	this.oneMinuteQueue.print();
-	this.fiveMinuteQueue.print();
-	this.oneHourQueue.print();
-	this.bottomTray.print();
-	ballClock.log("------");
+    ballClock.log("-----");
+    this.oneMinuteQueue.print();
+    this.fiveMinuteQueue.print();
+    this.oneHourQueue.print();
+    this.bottomTray.print();
+    ballClock.log("------");
 };
 
 /** Static MAX_STEPS value. **/
@@ -182,38 +190,36 @@ ballClock.Clock.MAX_STEPS = 600000;
 * Main logic for clock runs.
 */
 ballClock.Clock.prototype.runSimulation = function() {
-	
-	var isComplete = false;
-	var count = 1; // prevent runaways.
-	while(!isComplete && count < ballClock.Clock.MAX_STEPS) {
+    
+    var isComplete = false;
+    var minutes = 1; // track minutes.
+    while(!isComplete && minutes < ballClock.Clock.MAX_STEPS) {
 
-		var nextBall = this.bottomTray.next();
-		if (!nextBall) {
-			break;
-		}
-		// add a minute ball, if full, dump tray and place new ball on five minute tray instead
-		if (this.oneMinuteQueue.push(nextBall) === -1) {
-			this.drop(this.oneMinuteQueue);
-			// add a five minute ball, if full, dump tray and place new ball on hour tray instead
-			if (this.fiveMinuteQueue.push(nextBall) === -1) {
-				this.drop(this.fiveMinuteQueue);
-				// add an hour  ball, if full, dump tray and start over
-				if (this.oneHourQueue.push(nextBall) === -1) {
-					this.drop(this.oneHourQueue);
-					this.bottomTray.push(nextBall); // reset
-				}
-			}
-		}
-		
-		isComplete = this.bottomTray.checkOrder();
-		if (isComplete) {
-			var days= count/(24*60);
-			this.print(); 
-			// write output
-			console.log(this.size + " balls cycle after " + days + " days.");
-		}
-		count++;
-	}
+        var nextBall = this.bottomTray.next();
+        // add a minute ball, if full, dump tray and place new ball on five minute tray instead
+        if (this.oneMinuteQueue.push(nextBall) === -1) {
+            this.drop(this.oneMinuteQueue);
+            // add a five minute ball, if full, dump tray and place new ball on hour tray instead
+            if (this.fiveMinuteQueue.push(nextBall) === -1) {
+                this.drop(this.fiveMinuteQueue);
+                // add an hour  ball, if full, dump tray and start over
+                if (this.oneHourQueue.push(nextBall) === -1) {
+                    this.drop(this.oneHourQueue);
+                    this.bottomTray.push(nextBall); // reset
+                }
+            }
+        }
+        // validate current iteration
+        isComplete = this.bottomTray.checkOrder();
+        if (isComplete) {
+            var days = minutes/(24*60);
+            // display tray if in DEBUG mode
+            this.bottomTray.print(); 
+            // write output
+            console.log(this.size + " balls cycle after " + days + " days.");
+        }
+        minutes++;
+    }
 };
 
 /**************************************************************************************/
@@ -226,11 +232,11 @@ ballClock.Clock.prototype.runSimulation = function() {
 */
 ballClock.Simulator = function(queueSizes, maxSteps) {
 
-	for (var i=0; i < queueSizes.length; i++) {
-		var clock = new ballClock.Clock(queueSizes[i]);
-		ballClock.log("Running clock of size " + queueSizes[i]);
-		clock.runSimulation(maxSteps);
-	}
+    for (var i=0; i < queueSizes.length; i++) {
+        var clock = new ballClock.Clock(queueSizes[i]);
+        ballClock.log("Running clock of size " + queueSizes[i]);
+        clock.runSimulation(maxSteps);
+    }
 };
 
 // RUN!
