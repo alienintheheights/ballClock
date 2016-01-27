@@ -203,7 +203,8 @@ ballClock.Clock.prototype.runSimulation = function() {
 
 /**
 * @desc The Simulator Class.
-* Usage: new ballClock.Simulator([30], 21700);
+* Sample usage: new ballClock.Simulator([30, 45]);
+* TODO: Add unit test.
 */
 ballClock.Simulator = function(queueSizes, maxSteps) {
     // loop over queues
