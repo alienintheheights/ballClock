@@ -119,10 +119,9 @@ ballClock.Clock.MAX_SIZE = 217;
 * @constructor for Clock
 */
 ballClock.Clock = function(size) {
-    //console.log("Initializing a ball clock of size " + size);
     if (size <= ballClock.Clock.MIN_SIZE || size >= ballClock.Clock.MAX_SIZE)  {
         console.log("Clock out of range " + size);
-        return;
+        return null;
     }
     this.size = size;
     // init trays
@@ -207,11 +206,13 @@ ballClock.Clock.prototype.runSimulation = function() {
 * Usage: new ballClock.Simulator([30], 21700);
 */
 ballClock.Simulator = function(queueSizes, maxSteps) {
-
+    // loop over queues
     for (var i=0; i < queueSizes.length; i++) {
         var clock = new ballClock.Clock(queueSizes[i]);
-        ballClock.log("Running clock of size " + queueSizes[i]);
-        clock.runSimulation(maxSteps);
+        if (clock) {
+            ballClock.log("Running clock of size " + queueSizes[i]);
+            clock.runSimulation(maxSteps);
+        }
     }
 };
 
