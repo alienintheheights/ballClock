@@ -25,5 +25,7 @@ For each clock described in the input, your program should report the number of 
 30 balls cycle after 15 days.
 45 balls cycle after 378 days.
 
+##Ignore this part
+
 
 ##DON'T IGNORE THIS
