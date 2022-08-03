@@ -1,7 +1,9 @@
 /**
 * @desc Ball Clock simulator.
 *   
-*   Usage: new ballClock.Simulator([SIZE1, SIZE2, ..., SIZEN]);
+*   Set values accordingly on the last line: new ballClock.Simulator([SIZE1, SIZE2, ..., SIZEN]);
+*   To run: node ballClock.js
+*   
 *
 * @author Andrew Lienhard
 * @date Jan 26, 2016
