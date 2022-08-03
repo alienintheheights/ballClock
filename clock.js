@@ -111,10 +111,6 @@ ballClock.BottomTrayQueue.prototype.checkOrder = function() {
 * @class Clock
 */
 
-// Bound values for Clock sizing
-ballClock.Clock.MIN_SIZE = 27;
-ballClock.Clock.MAX_SIZE = 217;
-
 /**
 * @constructor for Clock
 */
@@ -131,6 +127,10 @@ ballClock.Clock = function(size) {
     this.oneHourQueue = new ballClock.TrayQueue(11, "Hour Tray");
 };
 
+
+// Bound values for Clock sizing
+ballClock.Clock.MIN_SIZE = 27;
+ballClock.Clock.MAX_SIZE = 217;
 
 /**
 * Take given queue and dump it into the ball queue in reverse order.
